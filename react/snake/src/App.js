@@ -5,7 +5,7 @@ const GridCell = props => {
 
   return (
     <div
-      style={{ height: props.size + "px", width: props.size + "px", backgroundColor: props.food ? "red" : props.snake ? "blue" : "white" }}
+      style={{ height: props.size + "px", width: props.size + "px", backgroundColor: props.snake ? "blue" : props.food ? "red" : "white" }}
       />
   );
 }
@@ -20,8 +20,20 @@ class App extends Component {
       dx: 0
     };
 
-    this.moveSnake = this.moveSnake.bind(this);
-    this.setDirection = this.setDirection.bind(this);
+    this.moveSnake = this.moveSnake.bind(this)
+    this.moveFood = this.moveFood.bind(this);
+    this.setDirection = this.setDirection.bind(this)
+    this.removeTimers = this.removeTimers.bind(this)
+  }
+
+  moveFood() {
+    // if (this.moveFoodTimeout) clearTimeout(this.moveFoodTimeout)
+    const x = parseInt(Math.random() * this.numCells);
+    const y = parseInt(Math.random() * this.numCells);
+    this.setState({ food: [x, y] });
+    // this.moveFoodTimeout = setTimeout(this.moveFood, 5000)
+
+
   }
 
   moveSnake() {
@@ -29,9 +41,25 @@ class App extends Component {
     const head = {x: this.state.snake[0].x + this.state.dx, y: this.state.snake[0].y + this.state.dy};
 
     snake.unshift(head);
-    snake.pop();
+    
+
+    
+
+    if(this.checkIfAteFood()) {
+      this.moveFood()
+    } else {
+      snake.pop();
+    }
 
     this.setState({snake})
+  }
+
+  checkIfAteFood() {
+    // if  {
+    //   this.moveFood()
+    // }
+
+    return (this.state.snake[0].x === this.state.food[0] && this.state.snake[0].y === this.state.food[1])
   }
 
 
@@ -44,7 +72,9 @@ class App extends Component {
     this.setState({
       snake: [{x: 5, y: 5}],
       food: [10, 10]
-    });
+    }, () => { this.moveFood() });
+
+   
 
     this.moveSnakeInterval = setInterval(this.moveSnake, 130);
     //need to focus so keydown listener will work!
@@ -52,7 +82,13 @@ class App extends Component {
     this.el.focus();
   }
 
+  removeTimers() {
+    if (this.moveSnakeInterval) clearInterval(this.moveSnakeInterval);
+    if (this.moveFoodTimeout) clearTimeout(this.moveFoodTimeout)
+  }
+
    componentDidMount() {
+    this.removeTimers();
     this.startGame()
    }
 
@@ -89,7 +125,9 @@ class App extends Component {
       }
   }
 
-
+  componentWillUnmount() {
+    this.removeTimers();
+  }
 
   render() {
 
