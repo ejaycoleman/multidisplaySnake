@@ -16,35 +16,23 @@ class App extends Component {
     this.state = {
       snake: [],
       food: [],
+      dy: 1,
+      dx: 0
     };
 
     this.moveSnake = this.moveSnake.bind(this);
+    this.setDirection = this.setDirection.bind(this);
   }
 
   moveSnake() {
-      // Create the new Snake's head
+    let snake = this.state.snake
+    const head = {x: this.state.snake[0].x + this.state.dx, y: this.state.snake[0].y + this.state.dy};
 
-      let snake = this.state.snake
-      const head = {x: this.state.snake[0].x + 1, y: this.state.snake[0].y + 0};
-      // Add the new head to the beginning of snake body
-      snake.unshift(head);
-      // const didEatFood = snake[0].x === foodX && snake[0].y === foodY;
-      // if (didEatFood) {
-      //   // Increase score
-      //   score += 1;
+    snake.unshift(head);
+    snake.pop();
 
-      //   socket.emit('scoreUpdated', score)
-      //   // Display score on screen
-      //   document.getElementById('score').innerHTML = score;
-      //   // Generate new food location
-      //   createFood();
-      // } else {
-      //   // Remove the last part of snake body
-        snake.pop();
-
-      this.setState({snake})
-      // }
-    }
+    this.setState({snake})
+  }
 
 
 
@@ -61,11 +49,45 @@ class App extends Component {
     this.moveSnakeInterval = setInterval(this.moveSnake, 130);
     //need to focus so keydown listener will work!
     //this.el.focus();
+    this.el.focus();
   }
 
    componentDidMount() {
     this.startGame()
    }
+
+  setDirection({ keyCode }) {
+    const LEFT_KEY = 37;
+    const RIGHT_KEY = 39;
+    const UP_KEY = 38;
+    const DOWN_KEY = 40;
+    /**
+     * Prevent the snake from reversing
+     * Example scenario:
+     * Snake is moving to the right. User presses down and immediately left
+     * and the snake immediately changes direction without taking a step down first
+     */
+    // if (changingDirection) return;
+    // changingDirection = true;
+      const keyPressed = keyCode;
+      //const goingUp = dy === -10;
+      const goingUp = this.state.dy === -1;
+     const goingDown = this.state.dy === 1;
+      const goingRight = this.state.dx === 1;
+      const goingLeft = this.state.dx === -1;
+      if (keyPressed === LEFT_KEY && !goingRight) {
+        this.setState({dx: -1, dy: 0})
+      }
+      if (keyPressed === UP_KEY && !goingDown) {
+        this.setState({dx: 0, dy: -1})
+      }
+      if (keyPressed === RIGHT_KEY && !goingLeft) {
+        this.setState({dx: 1, dy: 0})
+      }
+      if (keyPressed === DOWN_KEY && !goingUp) {
+        this.setState({dx: 0, dy: 1})
+      }
+  }
 
 
 
@@ -98,19 +120,22 @@ class App extends Component {
 
 
     return (
-      <div className="App">
-        <header className="App-header">
-         
+      <div className="App" >
+        <header className="App-header" >
+        <div  >
           <div style={{
             boxSizing: "content-box",
             padding: 0,
             display: 'flex',
             flexWrap: 'wrap',
             width: '350px'}}
+
+
+            ref={el => (this.el = el)} onKeyDown={this.setDirection} tabIndex={-1}
           >
             {cells}
           </div>
-          
+        </div>
         </header>
       </div>
     );
