@@ -41,9 +41,6 @@ class App extends Component {
     const head = {x: this.state.snake[0].x + this.state.dx, y: this.state.snake[0].y + this.state.dy};
 
     snake.unshift(head);
-    
-
-    
 
     if(this.checkIfAteFood()) {
       this.moveFood()
@@ -52,17 +49,41 @@ class App extends Component {
     }
 
     this.setState({snake})
+    !this.isValid(head, snake) && this.endGame()
   }
 
   checkIfAteFood() {
-    // if  {
-    //   this.moveFood()
-    // }
-
     return (this.state.snake[0].x === this.state.food[0] && this.state.snake[0].y === this.state.food[1])
   }
 
+  isValid(head, snake) {
+    for (let i = 4; i < snake.length; i++) {
+      if (snake[i].x === head.x && snake[i].y === head.y) {
+        console.log("OVERLap")
+        return false
+      }
+    }
 
+    if (head.x === -1) {
+      console.log("left wall hit")
+      return false
+    }
+
+    if (head.x === this.numCells) {
+      console.log("right wall hit")
+      return false
+    }
+
+    if (head.y === -1 || head.y === this.numCells) {
+      return false
+    } 
+
+    return true
+  }
+
+  endGame() {
+    alert("lol")
+  }
 
   startGame() {
     //this.removeTimers();
