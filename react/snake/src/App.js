@@ -1,11 +1,17 @@
 import React, { Component } from 'react';
 import './App.css';
 
+
+import openSocket from 'socket.io-client';
+const  socket = openSocket('http://localhost:8000');
+
+socket.on('youAreComputer', computer => console.log(computer));
+
 const GridCell = props => {
 
   return (
     <div
-      style={{ height: props.size + "px", width: props.size + "px", backgroundColor: props.snake ? "blue" : props.food ? "red" : "white" }}
+      style={{ height: props.size + "px", width: props.size + "px", backgroundColor: props.snake ? "#4ECDC4" : props.food ? "#FF6B6B" : "#F7FFF7" }}
       />
   );
 }
@@ -25,6 +31,8 @@ class App extends Component {
     this.setDirection = this.setDirection.bind(this)
     this.removeTimers = this.removeTimers.bind(this)
   }
+
+
 
   moveFood() {
     // if (this.moveFoodTimeout) clearTimeout(this.moveFoodTimeout)
@@ -66,11 +74,13 @@ class App extends Component {
 
     if (head.x === -1) {
       console.log("left wall hit")
+      socket.emit('computerHitLeftWall')
       return false
     }
 
     if (head.x === this.numCells) {
       console.log("right wall hit")
+      socket.emit('computerHitRightWall')
       return false
     }
 
