@@ -3,9 +3,7 @@ import './App.css';
 
 
 import openSocket from 'socket.io-client';
-const  socket = openSocket('http://localhost:8000');
 
-socket.on('youAreComputer', computer => console.log(computer));
 
 const GridCell = props => {
 
@@ -23,7 +21,10 @@ class App extends Component {
       snake: [],
       food: [],
       dy: 1,
-      dx: 0
+      dx: 0,
+      changingDirection: false,
+      computer: 0,
+      currentGameplayComputer: 0
     };
 
     this.moveSnake = this.moveSnake.bind(this)
@@ -45,6 +46,14 @@ class App extends Component {
   }
 
   moveSnake() {
+    // if (this.state.computer !== this.state.currentGameplayComputer) {
+    //   this.pauseGame()
+    //   return
+    // }
+
+    this.setState({changingDirection: false})
+
+
     let snake = this.state.snake
     const head = {x: this.state.snake[0].x + this.state.dx, y: this.state.snake[0].y + this.state.dy};
 
@@ -74,14 +83,14 @@ class App extends Component {
 
     if (head.x === -1) {
       console.log("left wall hit")
-      socket.emit('computerHitLeftWall')
-      return false
+      this.socket.emit('computerHitLeftWall', this.state.snake[0].y)
+      //return false
     }
 
     if (head.x === this.numCells) {
       console.log("right wall hit")
-      socket.emit('computerHitRightWall')
-      return false
+      this.socket.emit('computerHitRightWall', this.state.snake[0].y)
+      //return false
     }
 
     if (head.y === -1 || head.y === this.numCells) {
@@ -106,9 +115,30 @@ class App extends Component {
       food: [10, 10]
     }, () => { this.moveFood() })
 
+    this.moveSnakeInterval = setInterval(this.moveSnake, 400)
+
+    this.el.focus()
+  }
+
+  resumeGame(yaxis) {
+     console.log("starting as")
+
+    this.removeTimers()
+
+    this.setState({
+      snake: [{x: this.state.computer === 1? this.numCells -1 : 0, y: yaxis}],
+      dy: 0,
+      dx: this.state.computer === 1? -1  : 1,
+      food: [10, 10]
+    }, () => { this.moveFood() })
+
     this.moveSnakeInterval = setInterval(this.moveSnake, 130)
 
     this.el.focus()
+  }
+
+  pauseGame() {
+    if (this.moveSnakeInterval) clearInterval(this.moveSnakeInterval);
   }
 
   removeTimers() {
@@ -118,6 +148,21 @@ class App extends Component {
 
    componentDidMount() {
     this.removeTimers();
+    this.socket = openSocket('http://localhost:8000');
+    this.socket.on('youAreComputer', computer => {
+      this.setState({computer})
+      console.log("this is computer: " + computer)
+    });
+
+    this.socket.on('startGameplay', (data) => {
+      if (data.currentGameplayComputer === this.state.computer) {
+        //console.log("OK ITS THIS COMPUTER")
+        this.resumeGame(data.yaxis)
+      } else {
+        this.pauseGame()
+      }
+    })
+
     this.startGame()
    }
 
@@ -126,14 +171,11 @@ class App extends Component {
     const RIGHT_KEY = 39;
     const UP_KEY = 38;
     const DOWN_KEY = 40;
-    /**
-     * Prevent the snake from reversing
-     * Example scenario:
-     * Snake is moving to the right. User presses down and immediately left
-     * and the snake immediately changes direction without taking a step down first
-     */
-    // if (changingDirection) return;
-    // changingDirection = true;
+
+    if (this.state.changingDirection) return
+    this.setState({changingDirection: true})
+
+
       const keyPressed = keyCode;
       //const goingUp = dy === -10;
       const goingUp = this.state.dy === -1;
@@ -159,6 +201,15 @@ class App extends Component {
   }
 
   render() {
+
+
+    
+
+    
+
+
+
+
     this.numCells = Math.floor(350 / 15);
     const cellSize = 350 / this.numCells;
     const cellIndexes = Array.from(Array(this.numCells).keys());

@@ -52,7 +52,7 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http);
 
 let numberOfDevices = 1
-
+let currentGameplayComputer = 1
 
 io.on('connection', function(socket){
 
@@ -63,12 +63,20 @@ io.on('connection', function(socket){
     numberOfDevices = 1
   }
 
-  socket.on('computerHitLeftWall', function(){
+  socket.on('computerHitLeftWall', function(yaxis){
     console.log("LeftWallHit!")
+    currentGameplayComputer = 1
+
+    let newData = {currentGameplayComputer, yaxis}
+    io.emit('startGameplay', newData)
   })
 
-  socket.on('computerHitRightWall', function(){
+  socket.on('computerHitRightWall', function(yaxis){
     console.log("RightWallHit!")
+    currentGameplayComputer = 2
+
+    let newData = {currentGameplayComputer, yaxis}
+    io.emit('startGameplay', newData)
   })
   
 });
