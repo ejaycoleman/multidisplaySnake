@@ -88,7 +88,7 @@ class App extends Component {
 
   startGame() {
     this.removeTimers()
-    
+
     this.setState({
       snake: [{x: 5, y: 5}],
       dy: 1,
@@ -149,19 +149,11 @@ class App extends Component {
   }
 
   render() {
-
-    // this.startGame()
-
-
     this.numCells = Math.floor(350 / 15);
-    //const cellSize = this.props.size / this.numCells;
     const cellSize = 350 / this.numCells;
     const cellIndexes = Array.from(Array(this.numCells).keys());
     const cells = cellIndexes.map(y => {
       return cellIndexes.map(x => {
-        //  const isFood = this.state.food[0] === x && this.state.food[1] === y;
-        //let snakeCell = this.state.snake.filter(c => c[0] === x && c[1] === y);
-
         let isCellSnake = this.state.snake.filter(i => i.x === x && i.y === y).length === 1 ? true : false
         const isCellFood = this.state.food[0] === x  && this.state.food[1] === y
 
@@ -186,8 +178,6 @@ class App extends Component {
             display: 'flex',
             flexWrap: 'wrap',
             width: '350px'}}
-
-
             ref={el => (this.el = el)} onKeyDown={this.setDirection} tabIndex={-1}
           >
             {cells}
