@@ -83,24 +83,22 @@ class App extends Component {
 
   endGame() {
     alert("lol")
+    this.startGame()
   }
 
   startGame() {
-    //this.removeTimers();
-    //this.moveSnakeInterval = setInterval(this.moveSnake, 130);
-    //this.moveFood();
-
+    this.removeTimers()
+    
     this.setState({
       snake: [{x: 5, y: 5}],
+      dy: 1,
+      dx: 0,
       food: [10, 10]
-    }, () => { this.moveFood() });
+    }, () => { this.moveFood() })
 
-   
+    this.moveSnakeInterval = setInterval(this.moveSnake, 130)
 
-    this.moveSnakeInterval = setInterval(this.moveSnake, 130);
-    //need to focus so keydown listener will work!
-    //this.el.focus();
-    this.el.focus();
+    this.el.focus()
   }
 
   removeTimers() {
