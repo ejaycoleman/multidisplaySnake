@@ -84,6 +84,11 @@ io.on('connection', function(socket){
     let newData = {currentGameplayComputer, yaxis, length}
     io.emit('startGameplay', newData)
   })
+
+  socket.on('updateScore', function(score) {
+    console.log('new')
+    io.emit('updateNewScore', score)
+  })
   
 });
 

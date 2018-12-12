@@ -24,7 +24,8 @@ class App extends Component {
       dx: 0,
       changingDirection: false,
       computer: 0,
-      currentGameplayComputer: 0
+      currentGameplayComputer: 0,
+      score: 0
     };
 
     this.moveSnake = this.moveSnake.bind(this)
@@ -60,6 +61,10 @@ class App extends Component {
     snake.unshift(head);
 
     if(this.checkIfAteFood()) {
+      //this.incrementScore(this.state.score + 10)
+      this.setState({score: this.state.score + 10})
+      this.socket.emit('updateScore', this.state.score)
+
       this.moveFood()
     } else {
       snake.pop();
@@ -68,6 +73,12 @@ class App extends Component {
     this.setState({snake})
     !this.isValid(head, snake) && this.endGame()
   }
+
+  // incrementScore(score) {
+    
+
+  //   this.socket.emit('updateScore', this.state.score)
+  // }
 
   checkIfAteFood() {
     return (this.state.snake[0].x === this.state.food[0] && this.state.snake[0].y === this.state.food[1])
@@ -173,6 +184,12 @@ class App extends Component {
       console.log("this is computer: " + computer)
     });
 
+    this.socket.on('updateNewScore', score => {
+      //this.incrementScore(score)
+      this.setState({score: score})
+      
+    })
+
     this.socket.on('startGameplay', (data) => {
 
       this.setState({currentGameplayComputer: data.currentGameplayComputer})
@@ -257,7 +274,8 @@ class App extends Component {
     return (
       <div className="App" >
         <header className="App-header" >
-        <div  >
+        <div>
+          <h1>Your score: {this.state.score}</h1>
           <div style={{
             boxSizing: "content-box",
             padding: 0,
