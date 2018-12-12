@@ -63,19 +63,25 @@ io.on('connection', function(socket){
     numberOfDevices = 1
   }
 
-  socket.on('computerHitLeftWall', function(yaxis){
+  socket.on('computerHitLeftWall', function(data){
     console.log("LeftWallHit!")
     currentGameplayComputer = 1
 
-    let newData = {currentGameplayComputer, yaxis}
+    let yaxis = data.yaxis
+    let length = data.snakeLength
+
+    let newData = {currentGameplayComputer, yaxis, length}
     io.emit('startGameplay', newData)
   })
 
-  socket.on('computerHitRightWall', function(yaxis){
+  socket.on('computerHitRightWall', function(data){
     console.log("RightWallHit!")
     currentGameplayComputer = 2
 
-    let newData = {currentGameplayComputer, yaxis}
+    let yaxis = data.yaxis
+    let length = data.snakeLength
+
+    let newData = {currentGameplayComputer, yaxis, length}
     io.emit('startGameplay', newData)
   })
   

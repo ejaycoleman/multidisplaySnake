@@ -83,18 +83,24 @@ class App extends Component {
 
     if (head.x === -1) {
       console.log("left wall hit")
-      this.socket.emit('computerHitLeftWall', this.state.snake[0].y)
+
+      let data = {yaxis: this.state.snake[0].y, snakeLength: this.state.snake.length }
+
+      this.socket.emit('computerHitLeftWall', data)
       //return false
     }
 
+    //if (head.x === )
+
     if (head.x === this.numCells) {
       console.log("right wall hit")
-      this.socket.emit('computerHitRightWall', this.state.snake[0].y)
+      let data = {yaxis: this.state.snake[0].y, snakeLength: this.state.snake.length }
+      this.socket.emit('computerHitRightWall', data)
       //return false
     }
 
     if (head.y === -1 || head.y === this.numCells) {
-      return false
+      //return false
     } 
 
     return true
@@ -120,19 +126,32 @@ class App extends Component {
     this.el.focus()
   }
 
-  resumeGame(yaxis) {
-     console.log("starting as")
+  resumeGame(yaxis, length) {
+     console.log("starting as" + length)
 
     this.removeTimers()
 
+    let newSnake = [{x: this.state.computer === 1? this.numCells -1 : 0, y: yaxis}]
+
+    //this.state.computer === 1? (this.numCells -1 + i) : (0 - i)
+
+    for (let i = 1; i < length; i++) {
+      console.log('PUSHING')
+      newSnake.push({x: this.state.computer === 1? (this.numCells -1 + i) : (0 - i), y: yaxis})
+    }
+
+    this.setState({snake: newSnake})
+
+    //console.log(newSnake)
+
     this.setState({
-      snake: [{x: this.state.computer === 1? this.numCells -1 : 0, y: yaxis}],
+      
       dy: 0,
       dx: this.state.computer === 1? -1  : 1,
       food: [10, 10]
-    }, () => { this.moveFood() })
+    })
 
-    this.moveSnakeInterval = setInterval(this.moveSnake, 130)
+    this.moveSnakeInterval = setInterval(this.moveSnake, 400)
 
     this.el.focus()
   }
@@ -155,11 +174,17 @@ class App extends Component {
     });
 
     this.socket.on('startGameplay', (data) => {
-      if (data.currentGameplayComputer === this.state.computer) {
+
+      this.setState({currentGameplayComputer: data.currentGameplayComputer})
+
+      if (this.state.currentGameplayComputer === this.state.computer) {
         //console.log("OK ITS THIS COMPUTER")
-        this.resumeGame(data.yaxis)
+
+        this.resumeGame(data.yaxis, data.length)
       } else {
-        this.pauseGame()
+        //this.setState({snake: []})
+        //this.reduceSnakeInterval = setInterval(this.reduceSnake, 130)
+        //this.pauseGame()
       }
     })
 
