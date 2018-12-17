@@ -1,15 +1,29 @@
 {
-  "name": "mlh",
-  "version": "1.0.0",
-  "description": "",
-  "main": "server.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "name": "snake",
+  "version": "0.1.0",
+  "private": true,
+  "devDependencies": {
+    "react-scripts": "2.1.1"
   },
-  "author": "",
-  "license": "ISC",
   "dependencies": {
-    "express": "^4.15.2",
-    "socket.io": "^2.2.0"
-  }
+    "local-ip-url": "^1.0.1",
+    "react": "^16.6.3",
+    "react-dom": "^16.6.3",
+    "socket.io-client": "^2.2.0"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 11",
+    "not op_mini all"
+  ]
 }
